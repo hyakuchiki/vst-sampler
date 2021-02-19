@@ -79,6 +79,23 @@ class Synth():
         self.midi_params = midi_params
         return midi_params
 
+    def array_to_midi(self, use_params, default_params, param_array):
+        """array 0 to 1
+
+        Args:
+            use_params (list): list of parameters to set with array
+            default_params (dict): default values
+            param_array (array like): array of parameters (float) in 0~1
+        """
+        midi_params = self.params_to_midi(default_params)
+        i = 0
+        assert len(use_params) == len(param_array)
+        for i, p_name in enumerate(use_params):
+            midi_name = self.preset_desc[p_name]["MIDI"]
+            midi_params[midi_name] = param_array[i]
+        self.midi_params = midi_params
+        return midi_params
+
     def set_random(self, use_params, default_params, rng=None):
         """set synth midi parameters randomly
 
