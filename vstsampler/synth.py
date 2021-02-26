@@ -19,6 +19,8 @@ class Synth():
         # load plugin preset-midicc info
         self.preset_desc = preset_info[synth_name]
         self.midi_idx = midi_indices[synth_name]
+        self.default_params = None
+        self.def_midi_params = None
 
     def load_synth(self, synth_dir, init_fxb=None, sample_rate=44100, buffer_size=512, fft_size=512):
         import librenderman as rm
@@ -87,7 +89,10 @@ class Synth():
             default_params (dict): default values
             param_array (array like): array of parameters (float) in 0~1
         """
-        midi_params = self.params_to_midi(default_params)
+        if default_params != self.default_params: # new default or first default
+            self.default_params = default_params
+            self.def_midi_params = self.params_to_midi(self.default_params)
+        midi_params = self.def_midi_params.copy()
         i = 0
         assert len(use_params) == len(param_array)
         for i, p_name in enumerate(use_params):
@@ -106,7 +111,10 @@ class Synth():
         self.preset = None
         self.oor = 0        
         self.one_hots = {}
-        midi_params = self.params_to_midi(default_params)
+        if default_params != self.default_params: # new default or first default
+            self.default_params = default_params
+            self.def_midi_params = self.params_to_midi(self.default_params)
+        midi_params = self.def_midi_params.copy()
         midi_params.update(midi_only[self.synth_name])
         for p_name, p_info in self.preset_desc.items():
             if not p_info["MIDI"]: continue
